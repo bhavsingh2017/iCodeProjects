@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+Deion
+
+This is a temporary script file.
+"""
+
+#To run a command as administrator (user "root"), use "sudo <command>".
+#See "man sudo_root" for details.
+
+#dt86@icode4-student:~$ python
+#Python 2.7.15rc1 (default, Apr 15 2018, 21:51:34) 
+#[GCC 7.3.0] on linux2
+#Type "help", "copyright", "credits" or "license" for more information.
+anima_plural= "monkeys"
+emotion= "perturbed"
+character_trait = "wholesomeness"
+adjective = "vivacious"
+print ("So long and thanks for all the{}" .format (anima_plural))                                                       
+print ("So {emotion} that it should come to this")                                                       
+print ("We tried to warn you all but oh dear?")
+print ("You may not share our {character_trait}")
+print ("Which might explain you disrespect")
+print ("For all the {adjective} wonders that grow around you")
+print ("So long, so long and thanks for all the {anima_plural}")
+animal_2 ="shimps"
+emotion = "tempered"
+character_trait = "honorable"
+adjective = "glorious"
+print ("The world's about to be destoyed")
+print ("There's no point getting all {emotion}")
+print ("Lie back and let the planet dissolve")
+print ("Despite those nets of {animal_2} fleets")
+print ("We thought that most of you were {emotion}")
+print ("Especially {adjective} tots and your pregnant women")
+print ("So long,so long,so long,so long,so long,so long,so long,so long,so long,so long")
+print ("So long, so long and thanks for all the {animal_plural}")
