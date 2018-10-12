@@ -12,8 +12,36 @@ import linecache
 ##get diff
 ##TODO
 
+def readTextFile(myFile):
+	#read the file here and then return what it is supposed to say
+	#returns the list where the first element is the name of the 
+	#file and the second element is the string of what the output 
+	#should be 
+
+
+	#returns ---> results = [name_of_file, expected_result]
+
+	name_of_file = ""
+	expected_result = ""
+
+	fp = open(myFile, 'r') 
+	name_of_file=line = fp.readline()
+	with open(myFile) as fp:  
+   		line = fp.readline()
+   		while line:
+   			expected_result = expected_result+line
+       		line = fp.readline()
+	fp.close()
+
+	results= []
+	results.append(name_of_file)
+	results.append(expected_result)
+
+	return results
+
 def returnDifferences(studentFile, asnwerFile):
 	return 1
+
 def getGrade(errors, answer):
 	charCount = len(answer)
 	if(errors >= charCount):
@@ -39,18 +67,47 @@ def pathToFileName(name):
 
 # hide main window
 def main():
+
+
+	#this contains three different files, the program asks 
+	#for the csv file, what the result should be text file
+	#and also the folder with all the student files
+
 	root = tkinter.Tk()
 	Label(root, text="Enter Output File Name:").grid(row=0)
 	e1 = Entry(root)
 	e1.grid(row=0, column=1)
-	#root.withdraw()
+
+	#ask for the csv file 
 	csv_file = filedialog.askopenfilename(initialdir = 
 		"/",title = "Select csv file")
+	#if nothing is selected, exit 
+	pathException(csv_file)
 
+	#here is the filename of the answer file 
 	root.filename =  filedialog.askopenfilename(initialdir = 
 		"/",title = "Select file",filetypes = (("py files","*.py"),("txt files","*.txt"),
 			("jpeg files","*.jpg"),("all files","*.*")))
+	#if nothing is selected, exit 
 	pathException(root.filename)
+
+	#get the folder
+	folder = filedialog.askdirectory(title = "Student Submissions Folder")
+	pathException(folder)
+	pathlist = Path(folder).glob(("all files","*.*"))
+
+	hwName, output = readTextFile(root.filename)
+	
+	print("the filename is: "+hwName)
+	print("and this file contains: ")
+	print(output)
+
+	
+
+
+
+
+
 
 
 	##RUN THE ANSWER FILE & STORE OUTPUT HERE###
@@ -61,52 +118,7 @@ def main():
 	stdout, stderr = process.communicate()
 	ansOUT = stdout
 	##ansOUT is what the output should be 
-	########################
-
-
-
-
-	##need to search the csv file###
-	###need to search for 
-	studentIDS = []
-
-	####here get students IDSfrom csv file######
-	
-	key = '"en";"'
-	print("the key is: "+key)
-	i=2
-	while getLINE = linecache.getline(csv_file, i):
-		strt = getLINE.find(key)
-		strt = strt + len(key)
-		ID = " "
-		while getLine[strt]!='"':
-			ID = ID+getLine[strt]
-		studentIDS.append(ID)
-		i++
-
-	####///////////////////////////////////////////////######
-
-	##get the time stamp for the csv file 
-	
-
-
-	folder = filedialog.askdirectory(title = "All Student Submissions For This HW")
-	pathException(folder)
-	pathlist = Path(folder).glob('**/*.py')
-
-	#ID is the student's identification number#
-
-	##traverse through all the students solutions in the folder
-	for path in pathlist:
-		if path == ID:
-			print("student found!")
-		studentString = str(path) #this is the filename of the student
-		studentOutput = ""
-		##RUN THE STUDENT FILE & STORE OUTPUT HERE###
-
-		########################
-		errors = returnDifferences(studentOutput, root.filename)
-		
+	########################	
 
 	# message box display
 main()

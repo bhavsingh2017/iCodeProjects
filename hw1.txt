@@ -1,3 +1,0 @@
-#*Autograder created for the iCode class 
-#*Bhavkirat Singh USC 2021
-#*Homework #1 
