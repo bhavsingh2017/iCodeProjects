@@ -12,6 +12,45 @@ import linecache
 ##get diff
 ##TODO
 
+##student file 
+class studentFile:
+	def __init__(self, ID, stuFile, grade):
+		self.ID = ID
+		self.stuFile = stuFile
+		self.grade = grade
+	def getFileName:
+		return self.stuFile
+	def setFileName(x):
+		self.stuFile=x
+	def getID:
+		return self.ID
+	def setID(x):
+		self.ID=x
+	def getGrade:
+		return self.grade
+	def setGrade(x):
+		self.grade = x
+
+
+
+#this function will get rid of spaces on both ends
+#and it will also make every character a lowercase
+#character so there is no mistake with that
+def morphString(myString):
+	myString = myString.lower()
+	##this section gets rid of the spaces from the left to right 
+	i=0
+	while myString[i]==" ":
+		myString=myString[(i+1)::]
+		i=i+1
+
+	##this section gets rid of the spaces from the right to the left
+	i=len(myString)
+	while myString[i]==" ":
+		myString=myString[::(i-1)]
+		i=i-1
+	return myString
+
 def readTextFile(myFile):
 	#read the file here and then return what it is supposed to say
 	#returns the list where the first element is the name of the 
@@ -25,7 +64,7 @@ def readTextFile(myFile):
 	expected_result = ""
 
 	fp = open(myFile, 'r') 
-	name_of_file=line = fp.readline()
+	name_of_file=fp.readline()
 	with open(myFile) as fp:  
    		line = fp.readline()
    		while line:
@@ -95,6 +134,15 @@ def main():
 	folder = filedialog.askdirectory(title = "Student Submissions Folder")
 	pathException(folder)
 	pathlist = Path(folder).glob(("all files","*.*"))
+	studentList = []
+
+
+	##create a list of empty student files based on how many files there are 
+	for i in len(pathlist):
+		sampleFile = studentFile("0","empty",0)
+		studentList.append(sampleFile)
+	###
+
 
 	hwName, output = readTextFile(root.filename)
 	
@@ -102,10 +150,13 @@ def main():
 	print("and this file contains: ")
 	print(output)
 
-	
-
-
-
+	##going to read throught the csv file here #####
+	#name_of_file=fp.readline()
+	with open(csv_file) as fp:  
+   		line = fp.readline()
+   		while line:
+       		line = fp.readline()
+	fp.close()
 
 
 
