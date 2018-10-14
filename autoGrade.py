@@ -9,7 +9,12 @@ from tkinter import Button
 from subprocess import Popen, PIPE
 import linecache
 import sys
-	            
+	           
+
+def runFile(string, directoryAppend):
+	sys.append(directoryAppend)
+	process = Popen(['python3', string], stdout=PIPE, stderr=PIPE)
+	stdout, stderr = process.communicate() 
 
 def returnDifferences(studentFile, asnwerFile):
 	return 1
@@ -53,11 +58,6 @@ def main():
     	('All files', '*'), 
 	]
 
-
-
-
-
-
 	root = tkinter.Tk()
 	if(len(sys.argv)!=2):
 		print("Invalid Number of Arguments")
@@ -82,12 +82,29 @@ def main():
 		return
 	f = open(outputName,"w+")
 
+
+	######----------------------Traverse Answer File----------------------######
+
+	answer = open(root.filename, "r")
+	expectedFileName = linecache.getline(root.filename, 1)
+	expectedOutput =""
+
+	indice = 2
+	getLineAnswer = linecache.getline(root.filename, indice)
+	while getLineAnswer:
+		expectedOutput =expectedOutput+getLineAnswer
+		indice=indice+1
+		getLineAnswer= linecache.getline(root.filename, indice)
+
+	print(expectedFileName)
+	print(expectedOutput)
+
+	answer.close()
+
 	x = input("Select Student File Folder--->Press Enter to Continue")
 	folder = filedialog.askdirectory(title = "All Student Submissions For This HW")
 	pathException(folder)
 	pathlist = Path(folder).glob('**/*.py')
-
-
 
 
 	######----------------------Traverse CSV File----------------------######
@@ -164,26 +181,29 @@ def main():
 
 	print("Submission list size: "+str(len(studentSubmissionNumber)))
 	print("Student_ID list size: "+str(len(studentIDS)))
-
-
+	print(expectedFileName)
+	runFileName=""
+	sys.append(folder)
+	print("appending to--> "+folder)
 	for i in range(0, len(studentSubmissionNumber)):
-
+		print(i)
 		if (int(studentSubmissionNumber[i])<10): #submission is less than ten
-			
-		elif (int(studentSubmissionNumber[i])<=99 and (int(studentSubmissionNumber[i])>=10)): #10-99
+			runFileName = "0000"+studentSubmissionNumber[i]+"_0"+studentSubmissionNumber[i]+"_00-"
+			runFileName=runFileName+expectedFileName
+			print("File to Run: "+runFileName)
 
-		else: #100-999
-
-
-			
-
+		if (int(studentSubmissionNumber[i])<=99 and (int(studentSubmissionNumber[i])>=10)): #10-99
+			runFileName = "000"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
+			runFileName=runFileName+expectedFileName
+			print("File to Run: "+runFileName)
+		if (int(studentSubmissionNumber[i])<=999 and (int(studentSubmissionNumber[i])>=100)): #100-999
+			#do something here
+			runFileName = "00"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
+			runFileName=runFileName+expectedFileName
+			print("File to Run: "+runFileName)
 	f.close()
 
-	#justFileName = pathToFileName(root.filename)
-	#print(justFileName)
-	#sys.append(root.filename)
-	#process = Popen(['python3', justFileName], stdout=PIPE, stderr=PIPE)
-	#stdout, stderr = process.communicate()
+
 
 
 	##traverse through all the students solutions in the folder
