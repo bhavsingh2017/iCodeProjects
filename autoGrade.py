@@ -6,24 +6,51 @@ from tkinter import messagebox
 from tkinter import filedialog
 from pathlib import Path
 from tkinter import Button
-from subprocess import Popen, PIPE
+from subprocess import call
+from subprocess import check_output
+import os
 import linecache
 import sys
-	           
+from pathlib import Path
+import difflib
+from difflib import SequenceMatcher
 
-def runFile(string, directoryAppend):
-	sys.append(directoryAppend)
-	process = Popen(['python3', string], stdout=PIPE, stderr=PIPE)
-	stdout, stderr = process.communicate() 
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
 
-def returnDifferences(studentFile, asnwerFile):
-	return 1
-def getGrade(errors, answer):
-	charCount = len(answer)
-	if(errors >= charCount):
-		return 0
-	else:
-		return 100
+def runFile(string, directoryFileList):
+	if string in directoryFileList==False:
+		return "Incorrect File Name"
+	out = check_output(["python3", string])
+	return out
+
+def noSpacesNoQuote(stringx):
+	for i in range(0, len(stringx)):
+		if(stringx[i]==" " or stringx[i]=="'" or stringx[i]=='"'):
+			stringx = stringx[i+1::]
+		else:
+			break
+	for i in range(len(stringx), 0):
+		if(stringx[i]==" "):
+			stringx = stringx[::i-1]
+		else:
+			break
+	return stringx
+
+def grade(string1, string2):
+	string1 = string1.lower()
+	string2 = string2.lower()
+	string1 = noSpacesNoQuote(string1)
+	string2 = noSpacesNoQuote(string2)
+	string1 = str(string1)
+	string2 = str(string2)
+
+	sim = similar(string1, string2)
+	print("String1: "+string1)
+	print("String2: "+string2)
+	print("SIMILARITY RATIO: "+str(sim))
+	return sim
+
 def pathException(path):
 	if path!="":
 		print("you picked: "+path)
@@ -87,6 +114,7 @@ def main():
 
 	answer = open(root.filename, "r")
 	expectedFileName = linecache.getline(root.filename, 1)
+	expectedFileName=expectedFileName.rstrip('\n')
 	expectedOutput =""
 
 	indice = 2
@@ -112,8 +140,6 @@ def main():
 
 	#This loop will ignore the file if the submission number is blank*
 	#This loop will add the student to be checked only if they submitted a .py file
-
-
 
 	notPyFile=[]
 	studentIDS = []  #refers to the user id
@@ -183,15 +209,24 @@ def main():
 	print("Student_ID list size: "+str(len(studentIDS)))
 	print(expectedFileName)
 	runFileName=""
-	sys.append(folder)
+	sys.path.append(folder)
 	print("appending to--> "+folder)
+
+	files = os.listdir(folder)
+
+	for i in range(0, len(files)):
+		print(files[i])
+
+	mypath = Path().absolute()
+	print("mypath"+str(mypath))
+	sys.path.append(os.path.join(os.path.dirname(folder), ".."))
+	os.path.abspath(folder)
 	for i in range(0, len(studentSubmissionNumber)):
-		print(i)
+		print(i) 
 		if (int(studentSubmissionNumber[i])<10): #submission is less than ten
 			runFileName = "0000"+studentSubmissionNumber[i]+"_0"+studentSubmissionNumber[i]+"_00-"
 			runFileName=runFileName+expectedFileName
 			print("File to Run: "+runFileName)
-
 		if (int(studentSubmissionNumber[i])<=99 and (int(studentSubmissionNumber[i])>=10)): #10-99
 			runFileName = "000"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
 			runFileName=runFileName+expectedFileName
@@ -201,22 +236,32 @@ def main():
 			runFileName = "00"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
 			runFileName=runFileName+expectedFileName
 			print("File to Run: "+runFileName)
-	f.close()
 
-
-
-
-	##traverse through all the students solutions in the folder
-	# for path in pathlist:
-	# 	if path == ID:
-	# 		print("student found!")
-	# 	studentString = str(path) #this is the filename of the student
-	# 	studentOutput = ""
-	# 	##RUN THE STUDENT FILE & STORE OUTPUT HERE###
-
-	# 	########################
-	# 	errors = returnDifferences(studentOutput, root.filename)
+		exists = runFileName in files
+		runFileName=folder+"/"+runFileName
+		if exists == False:
+			print(studentIDS[i]+" has wrong filename gets 0%")
+			f.write("User: "+studentIDS[i]+" gets a 0%\n")
+			continue
+		outputFromFile=""
+		if exists == True:
+			try:
+				outputFromFile = runFile(runFileName, files)
+				print("Running "+runFileName)
+				print("Output: "+str(outputFromFile))
+			except:
+				print(studentIDS[i]+" has wrong syntax gets 0%")
+				f.write("User: "+studentIDS[i]+" gets a 0%\n")
+		grade1 = grade(outputFromFile, expectedOutput)
+		certainRatio = .023
+		gradeString = str((grade1+certainRatio)*100)+"%"
+		print(gradeString)
+		f.write("User: "+studentIDS[i]+" gets a "+gradeString+"%\n")
+		print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		
+		
+	f.close()
+	#what I have left is to read the right directory
+	#get the grades 
 
-	# message box display
 main()
