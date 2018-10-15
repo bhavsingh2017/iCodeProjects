@@ -277,7 +277,7 @@ def main():
 				print(studentIDS[i]+" has wrong syntax gets 0%")
 				f.write("User: "+studentIDS[i]+" gets a 0%\n")
 		grade1 = grade(outputFromFile, expectedOutput)
-		grade1 =round(grade1,2)
+		grade1 =round(grade1,4)
 		certainRatio = .023
 		gradeString = str((grade1+certainRatio)*100)+"%"
 		print(gradeString)
