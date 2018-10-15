@@ -37,6 +37,17 @@ def noSpacesNoQuote(stringx):
 			break
 	return stringx
 
+def findFile(fileKey, directory):
+
+	for path in directory:
+		numCompare = path[6]+path[7]
+		if(len(fileKey))>2:
+			numCompare=path[6]+path[7]+path[8]
+		if(numCompare==fileKey):
+			return path
+
+	return -1
+
 def grade(string1, string2):
 	string1 = string1.lower()
 	string2 = string2.lower()
@@ -221,20 +232,33 @@ def main():
 	print("mypath"+str(mypath))
 	sys.path.append(os.path.join(os.path.dirname(folder), ".."))
 	os.path.abspath(folder)
+
 	for i in range(0, len(studentSubmissionNumber)):
 		print(i) 
 		if (int(studentSubmissionNumber[i])<10): #submission is less than ten
-			runFileName = "0000"+studentSubmissionNumber[i]+"_0"+studentSubmissionNumber[i]+"_00-"
-			runFileName=runFileName+expectedFileName
+			#runFileName = "0000"+studentSubmissionNumber[i]+"_0"+studentSubmissionNumber[i]+"_00-"
+			#runFileName=runFileName+expectedFileName
+			fileSubmission = "0"+studentSubmissionNumber[i]
+			runFileName=findFile(fileSubmission, files)
+			if(runFileName==-1):
+				continue
 			print("File to Run: "+runFileName)
 		if (int(studentSubmissionNumber[i])<=99 and (int(studentSubmissionNumber[i])>=10)): #10-99
-			runFileName = "000"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
-			runFileName=runFileName+expectedFileName
+			#runFileName = "000"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
+			#runFileName=runFileName+expectedFileName
+			fileSubmission = studentSubmissionNumber[i]
+			runFileName=findFile(fileSubmission, files)
+			if(runFileName==-1):
+				continue
 			print("File to Run: "+runFileName)
 		if (int(studentSubmissionNumber[i])<=999 and (int(studentSubmissionNumber[i])>=100)): #100-999
 			#do something here
-			runFileName = "00"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
-			runFileName=runFileName+expectedFileName
+			#runFileName = "00"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
+			#runFileName=runFileName+expectedFileName
+			fileSubmission = studentSubmissionNumber[i]
+			runFileName=findFile(fileSubmission, files)
+			if(runFileName==-1):
+				continue
 			print("File to Run: "+runFileName)
 
 		exists = runFileName in files
@@ -253,6 +277,7 @@ def main():
 				print(studentIDS[i]+" has wrong syntax gets 0%")
 				f.write("User: "+studentIDS[i]+" gets a 0%\n")
 		grade1 = grade(outputFromFile, expectedOutput)
+		grade1 =round(grade1,2)
 		certainRatio = .023
 		gradeString = str((grade1+certainRatio)*100)+"%"
 		print(gradeString)
