@@ -9,11 +9,14 @@ from tkinter import Button
 from subprocess import call
 from subprocess import check_output
 import os
+import os.path
+import platform
 import linecache
 import sys
 from pathlib import Path
 import difflib
 from difflib import SequenceMatcher
+import datetime
 
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
@@ -37,8 +40,7 @@ def noSpacesNoQuote(stringx):
 			break
 	return stringx
 
-def findFile(fileKey, directory):
-
+def findFile(fileKey, directory, folderPath):
 	for path in directory:
 		numCompare = path[6]+path[7]
 		if(len(fileKey))>2:
@@ -47,6 +49,14 @@ def findFile(fileKey, directory):
 			return path
 
 	return -1
+def getTime(fileKey, directory, folderPath):
+	for path in directory:
+		numCompare = path[6]+path[7]
+		if(numCompare==fileKey):
+			t = os.path.getmtime(folderPath+'/'+path)
+			timeStamp = str(datetime.datetime.fromtimestamp(t))
+			return timeStamp
+
 
 def grade(string1, string2):
 	string1 = string1.lower()
@@ -206,9 +216,11 @@ def main():
 	print("These many students didn't submit .py files: "+str(len(notPyFile)))
 	index = 0
 
+	f.write(expectedFileName+"\n\n")
+
 	while index<len(notPyFile):
 		if (notPyFile[index] in studentIDS)==False:
-			f.write("User: "+notPyFile[index]+" gets a 0%\n")
+			f.write("User: "+notPyFile[index]+" gets a 0%\n\n")
 		index=index+1
 	#empty this list, we don't need it anymore
 	notPyFile[:] = []
@@ -233,13 +245,16 @@ def main():
 	sys.path.append(os.path.join(os.path.dirname(folder), ".."))
 	os.path.abspath(folder)
 
+
+
 	for i in range(0, len(studentSubmissionNumber)):
 		print(i) 
 		if (int(studentSubmissionNumber[i])<10): #submission is less than ten
 			#runFileName = "0000"+studentSubmissionNumber[i]+"_0"+studentSubmissionNumber[i]+"_00-"
 			#runFileName=runFileName+expectedFileName
 			fileSubmission = "0"+studentSubmissionNumber[i]
-			runFileName=findFile(fileSubmission, files)
+			runFileName=findFile(fileSubmission, files, folder)
+			timeStamp = getTime(fileSubmission, files, folder)
 			if(runFileName==-1):
 				continue
 			print("File to Run: "+runFileName)
@@ -247,7 +262,8 @@ def main():
 			#runFileName = "000"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
 			#runFileName=runFileName+expectedFileName
 			fileSubmission = studentSubmissionNumber[i]
-			runFileName=findFile(fileSubmission, files)
+			runFileName=findFile(fileSubmission, files, folder)
+			timeStamp = getTime(fileSubmission, files, folder)
 			if(runFileName==-1):
 				continue
 			print("File to Run: "+runFileName)
@@ -256,16 +272,22 @@ def main():
 			#runFileName = "00"+studentSubmissionNumber[i]+"_"+studentSubmissionNumber[i]+"_00-"
 			#runFileName=runFileName+expectedFileName
 			fileSubmission = studentSubmissionNumber[i]
-			runFileName=findFile(fileSubmission, files)
+			runFileName=findFile(fileSubmission, files, folder)
+			timeStamp = getTime(fileSubmission, files, folder)
 			if(runFileName==-1):
 				continue
 			print("File to Run: "+runFileName)
 
+
 		exists = runFileName in files
 		runFileName=folder+"/"+runFileName
+		if runFileName.find(expectedFileName)==-1:
+			f.write("User: "+studentIDS[i]+" gets a 0%\n")
+			f.write("Submitted: Wrong File/Wrong Name/Bad Submission\n\n")
+			continue
 		if exists == False:
 			print(studentIDS[i]+" has wrong filename gets 0%")
-			f.write("User: "+studentIDS[i]+" gets a 0%\n")
+			f.write("User: "+studentIDS[i]+" gets a 0%\n\n")
 			continue
 		outputFromFile=""
 		if exists == True:
@@ -276,12 +298,14 @@ def main():
 			except:
 				print(studentIDS[i]+" has wrong syntax gets 0%")
 				f.write("User: "+studentIDS[i]+" gets a 0%\n")
+				f.write("Submitted: Wrong File/Wrong Name/Bad Submission/Invalid Syntax in File\n\n")
 		grade1 = grade(outputFromFile, expectedOutput)
 		grade1 =round(grade1,4)
 		certainRatio = .023
 		gradeString = str((grade1+certainRatio)*100)+"%"
 		print(gradeString)
 		f.write("User: "+studentIDS[i]+" gets a "+gradeString+"%\n")
+		f.write("Submitted--> "+timeStamp+"\n\n")
 		print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		
 		
