@@ -67,9 +67,7 @@ def grade(string1, string2):
 	string2 = str(string2)
 
 	sim = similar(string1, string2)
-	print("String1: "+string1)
-	print("String2: "+string2)
-	print("SIMILARITY RATIO: "+str(sim))
+	
 	return sim
 
 def pathException(path):
@@ -111,8 +109,6 @@ def main():
 		print("Invalid Number of Arguments")
 		return
 	outputName = str(sys.argv[1])+".txt"
-	print("The output file is: "+outputName)
-
 	root.withdraw()
 
 	x = input("Select csv_file--->Press Enter to Continue")
@@ -144,9 +140,6 @@ def main():
 		expectedOutput =expectedOutput+getLineAnswer
 		indice=indice+1
 		getLineAnswer= linecache.getline(root.filename, indice)
-
-	print(expectedFileName)
-	print(expectedOutput)
 
 	answer.close()
 
