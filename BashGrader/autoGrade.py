@@ -89,6 +89,34 @@ def pathToFileName(name):
 def errorWindow(string):
 	messagebox.showerror('User Error', string)
 	return
+def findSemiColonCount(file_name, key):
+	op = open(file_name, 'r')
+	getLine = linecache.getline(file_name, 1)
+	print(getLine)
+	findKey = getLine.find(key) #finds the key
+	if(findKey==-1): return -1
+	print("FINDKEY: "+str(findKey))
+	semiCount = 1
+	##now we have location of the key
+	print(getLine[0:findKey+1]) 
+	currentString = getLine[0:findKey+1]
+	print("Hup: "+currentString)
+	print("Finding key")
+	semiCount = currentString.count(";")
+	print(semiCount)
+	op.close()
+	return semiCount
+
+def skipToSemi(semiCount,line):
+	cnt = 0
+	i=0
+	while cnt!=semiCount:
+		loc = line.find(";")
+		cnt=cnt+1
+		line = line[loc+1::]
+		i=loc+1+i
+	print("DEBUG: "+str(i))
+	return i 
 
 # hide main window
 def main():
@@ -161,6 +189,10 @@ def main():
 	key = '"en";"' #this is the part that has the ID
 	getZero = '"ext"":""py"'
 	print("the key is: "+key) 
+
+	semCount = findSemiColonCount(csv_file, '"Enter your iCode student ID:"')
+
+	print("SemiCount: "+str(semCount))
 	i=2
 	getLine = linecache.getline(csv_file, i)
 	while getLine: #read in all lines
@@ -171,16 +203,32 @@ def main():
 		if getLine.find(getZero)==-1: 
 			studentGetsZero=True
 
-		strt = strt+len(key)
 		number = ""
 		ID = ""
-		while getLine[strt]!='"':
-			ID = ID+getLine[strt]
-			strt=strt+1
+		loc = skipToSemi(semCount, getLine) 
+		print("length of string: "+str(len(getLine)))
+		print("LOC: "+str(loc))
+		loc=loc+1
+		try:
+			while getLine[loc]!='"':
+				print("Test--"+getLine[loc])
+				if(loc==len(getLine)-1): 
+					ID=ID+getLine[loc]
+					break
+				ID = ID+getLine[loc]
+				loc=loc+1
+		except:
+			print("BAD FILE INPUT")
+
+
+		ID = ID[0::]
 		strt=1
 		while getLine[strt]!='"':
 			number = number+getLine[strt]
 			strt=strt+1
+
+		print("Number:::::::"+number)
+		print("ID::::::::"+ID)
 
 		if(studentGetsZero):
 			notPyFile.append(ID)
@@ -188,6 +236,12 @@ def main():
 			print("Student_ID:"+ID)
 			print("Submission:"+number)
 		if(((ID!="" and ID!=";" and ID!=" " and ID!="  ") and studentGetsZero==False)):
+			
+
+			if ID in studentIDS:
+				replaceID = studentIDS.index(ID)
+				studentIDS.pop(replaceID)
+
 			studentIDS.append(ID)
 			studentSubmissionNumber.append(number)
 			print("Student_ID:"+ID)
@@ -198,6 +252,7 @@ def main():
 		print()
 		print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		print()
+
 
 
 	######----------------------Traverse CSV File----------------------######
@@ -213,7 +268,10 @@ def main():
 
 	while index<len(notPyFile):
 		if (notPyFile[index] in studentIDS)==False:
-			f.write("User: "+notPyFile[index]+" gets a 0%\n\n")
+			if(len(notPyFile[index])<=2):
+				f.write("User: Poor ID Submission, gets a 0%\n\n")
+			else:
+				f.write("User: "+notPyFile[index]+" gets a 0%\n\n")
 		index=index+1
 	#empty this list, we don't need it anymore
 	notPyFile[:] = []
@@ -280,7 +338,8 @@ def main():
 			continue
 		if exists == False:
 			print(studentIDS[i]+" has wrong filename gets 0%")
-			f.write("User: "+studentIDS[i]+" gets a 0%\n\n")
+			f.write("User: "+"Entered Bad Filename"+" gets a 0%\n\n")
+
 			continue
 		outputFromFile=""
 		if exists == True:
@@ -290,7 +349,10 @@ def main():
 				print("Output: "+str(outputFromFile))
 			except:
 				print(studentIDS[i]+" has wrong syntax gets 0%")
-				f.write("User: "+studentIDS[i]+" gets a 0%\n")
+				if(len(studentIDS[i])<=2):
+					f.write("User: "+studentIDS[i]+" gets a 0%\n")
+				else:
+					f.write("User: "+"[Did not provide ID]"+" gets a 0%\n")
 				f.write("Submitted: Wrong File/Wrong Name/Bad Submission/Invalid Syntax in File\n\n")
 		grade1 = grade(outputFromFile, expectedOutput)
 		grade1 =round(grade1,4)
